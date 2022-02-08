@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -138,83 +139,100 @@ class UserController extends Controller
         //     $personas = DB::table('persona')
         //         ->whereDate('fecha_nacimiento', '>=', '1992-08-08')
         //         ->get();
-            // comprobar columnas entre si
-            $personas = DB::table('persona')
-                ->whereColumn('apellido1', 'apellido2')
-                ->get();
+            // // comprobar columnas entre si
+            // $personas = DB::table('persona')
+            //     ->whereColumn('apellido1', 'apellido2')
+            //     ->get();
 
-            // varias condiciones sobre varias columnas
-             $personas = DB::table('persona')
-                ->whereColumn([
-                    ['apellido1', '=', 'apellido2'],
-                    ['apellido1', '>', 'apellido2'],
-                ])->get();   
+            // // varias condiciones sobre varias columnas
+            //  $personas = DB::table('persona')
+            //     ->whereColumn([
+            //         ['apellido1', '=', 'apellido2'],
+            //         ['apellido1', '>', 'apellido2'],
+            //     ])->get();   
 
-            // SUBCONSULTAS
+            // // SUBCONSULTAS
 
-            $personas = DB::table('persona')
-                    ->whereExists(function($query){
-                        $query->select(DB::raw(1))
-                        ->from('alumno_se_matricula_asignatura')
-                        ->whereRaw('persona.id = alumno_se_matricula_asignatura.id_alumno');
-                    }) ->get();
+            // $personas = DB::table('persona')
+            //         ->whereExists(function($query){
+            //             $query->select(DB::raw(1))
+            //             ->from('alumno_se_matricula_asignatura')
+            //             ->whereRaw('persona.id = alumno_se_matricula_asignatura.id_alumno');
+            //         }) ->get();
 
-            //dd($personas);
+            // //dd($personas);
 
-            // $users = DB::table('users')
-            // ->where(function ($query) {
-            //     $query->select('type')
-            //         ->from('membership')
-            //         ->whereColumn('user_id', 'users.id')
-            //         ->orderByDesc('start_date')
-            //         ->limit(1);
-            // }, 'Pro')->get();
+            // // $users = DB::table('users')
+            // // ->where(function ($query) {
+            // //     $query->select('type')
+            // //         ->from('membership')
+            // //         ->whereColumn('user_id', 'users.id')
+            // //         ->orderByDesc('start_date')
+            // //         ->limit(1);
+            // // }, 'Pro')->get();
 
-            $personas = DB::table('persona')->orderBy('id')->chunk(5,function ($users){
-                foreach($users as $user){
-                    echo $user->nombre.'<br/>';
-                }
-                return false;
-            });
+            // $personas = DB::table('persona')->orderBy('id')->chunk(5,function ($users){
+            //     foreach($users as $user){
+            //         echo $user->nombre.'<br/>';
+            //     }
+            //     return false;
+            // });
 
-            // DEVUELVE TRUE SI LA CONSULTA TIENE ALGUN RESULTADO
-            echo DB::table('persona')->where('tipo','alumno')->exists();
+            // // DEVUELVE TRUE SI LA CONSULTA TIENE ALGUN RESULTADO
+            // echo DB::table('persona')->where('tipo','alumno')->exists();
 
-            // DEVUELVE TRUE SI LA CONSULTA NO OBTIENE ALGUN RESULTADO
-            echo DB::table('persona')
-                ->where('nombre', 'alfonsito')
-                ->doesntExist();
-
-
-            $personas = DB::table('persona')
-                ->orderBy('apellido1', 'desc')
-                ->orderBy('apellido2', 'asc')
-                ->get();
-
-            // busca por defecto segun la columna created_at
-            $personas = DB::table('persona')
-                ->latest('fecha_nacimiento')
-                ->first();
+            // // DEVUELVE TRUE SI LA CONSULTA NO OBTIENE ALGUN RESULTADO
+            // echo DB::table('persona')
+            //     ->where('nombre', 'alfonsito')
+            //     ->doesntExist();
 
 
-            // orden aleatorio
+            // $personas = DB::table('persona')
+            //     ->orderBy('apellido1', 'desc')
+            //     ->orderBy('apellido2', 'asc')
+            //     ->get();
 
-            $personas = DB::table('persona')
-                ->inRandomOrder('fecha_nacimiento')
-                ->first();
+            // // busca por defecto segun la columna created_at
+            // $personas = DB::table('persona')
+            //     ->latest('fecha_nacimiento')
+            //     ->first();
+
+
+            // // orden aleatorio
+
+            // $personas = DB::table('persona')
+            //     ->inRandomOrder('fecha_nacimiento')
+            //     ->first();
 
                
                 
-            $personas = DB::table('persona')->select('sexo')
-                ->groupBy('sexo')
-                ->having('sexo', 'H')
-                ->get();    
-            //skip equivale a offset y take equivale a limit
-            //select * from `persona` limit 5 offset 10
-            $personas = DB::table('persona')->skip(10)->take(5)->get();
+            // $personas = DB::table('persona')->select('sexo')
+            //     ->groupBy('sexo')
+            //     ->having('sexo', 'H')
+            //     ->get();    
+            // //skip equivale a offset y take equivale a limit
+            // //select * from `persona` limit 5 offset 10
+            // $personas = DB::table('persona')->skip(10)->take(5)->get();
 
 
+                // CONSULTAS con los modelos de ELOQUENT
 
+              // select * from 'users';  
+              $users = User::all();  
+              $usuario = User::where('name','like', 'E%')
+                            ->orderBy('name', 'desc')
+                            ->first()
+                            ->get();
+              // devuelve los datos de usuario en la variable u              
+              $u = $usuario->fresh();
+              // le cambio el nombre
+              $usuario->name='Carlitos';
+              // actualizamos la variable con los datos de la base de datos
+              $usuario->refresh();
+              dd($usuario);
+
+
+                
 
     }
 
