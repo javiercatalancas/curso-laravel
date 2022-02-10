@@ -39,8 +39,8 @@ Route::get('/', function () {
 
 
 Route::get('users/{user}', function(App\User $user){
-    //return $user->email;
-    dd($user);
+    return $user->email;
+
 });
 
 
